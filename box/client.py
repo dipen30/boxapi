@@ -6,8 +6,7 @@ import urllib
 import httplib
 import json
 
-from error import BoxError
-from types import InstanceType
+from error import ERRORCODES
 
 BOX_API_VERSION = "/2.0"
 BOX_API_URL = "api.box.com"
@@ -114,6 +113,7 @@ class BoxClient(object):
             
         Returns:
             - httplib.HTTPResponse that is the result of the request.
+            close HttpResponse once file is downloaded.
         """
         return self.request("/files/"+fileId+"/content", qs_args=args)
 
@@ -145,16 +145,9 @@ class BoxClient(object):
         data = con.getresponse()
         print data.status
         print data.getheaders()
-        if data.status == 401:
-            error = data.getheader('www-authenticate', '')
-            errorDescription = error.split("error_description=")[-1]
-            response["status"] = data.status
-            response["error"] = errorDescription[1:-1]
-        elif data.status == 409 or data.status == 404:
+        if data.status in ERRORCODES:
             response["status"] = data.status
             response["error"] = data.reason
-        elif data.status == 204:
-            response["status"] = data.status
         elif data.status == 201 or data.status == 200:
             response = data.read()
         elif data.status == 302:
@@ -162,7 +155,7 @@ class BoxClient(object):
             data.close()
             con.close()
             con1 = httplib.HTTPSConnection(BOX_DOWNLOAD_URL, timeout=self.timeout)
-            con1.request(method, url[len("https://"+BOX_DOWNLOAD_URL):], None, headers)
+            con1.request(method, url[len("https://"+BOX_DOWNLOAD_URL):])
             return con1.getresponse()
 
         data.close()

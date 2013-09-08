@@ -2,7 +2,7 @@
 # Copyright 2013-2014 Dipen Patel
 # See LICENSE for details.
 
-ERRORS = {
+STATUSCODES = {
             200 :  "success",
             201 :  "created",
             202 :  "accepted",
@@ -20,6 +20,9 @@ ERRORS = {
             500 :  "internal_server_error",
             507 :  "insufficient_storage"
           }
+ERRORCODES = (204,400,401,403,404,405,409,412,429,500,507)
+
+
 class BoxError(Exception):
     """Box exception"""
 
