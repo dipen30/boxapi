@@ -194,8 +194,7 @@ class BoxClient(object):
         """Encode files as 'multipart/form-data'.
 
         Fields are a dict of form name-> value. For files, value should
-        be a file object. Other file-like objects might work and a fake
-        name will be chosen.
+        be a file object.
 
         Returns (content_type, body) ready for httplib.HTTP instance.
 
