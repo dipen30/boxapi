@@ -142,6 +142,19 @@ class BoxClient(object):
             http://developers.box.com/docs/#files-upload-a-file
         """
         return self.request_upload(parentId, fileObj=fileObj, fileId=fileId)
+    
+    def delete_file(self, fileId):
+        """Delete a file with given id
+        
+        Args:
+            - fileId : File id to delete
+        
+        Returns:
+            - returns an 204 status response if file is deleted successfully.
+            for more details, visit
+            http://developers.box.com/docs/#files-delete-a-file
+        """
+        return self.request("/files/"+fileId, method="DELETE")
 
     def request_upload(self, parentId, method='POST', fileObj=None, fileId=None):
         """An internal method that builds the url, headers, and params for Box API request.
@@ -187,7 +200,10 @@ class BoxClient(object):
         try:
             return json.loads(response)
         except Exception, e:
-            raise BoxError(e)
+            try:
+                return json.dumps(response)
+            except:
+                raise BoxError(e)
 
     # based on: http://code.activestate.com/recipes/146306/
     def _encode_multipart_form(self, fields):

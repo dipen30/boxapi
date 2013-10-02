@@ -23,4 +23,7 @@ print folder
 files = c.get_files("id")
 print files
 
+file_delete = c.delete_file("10606303689")
+print file_delete
+
 
