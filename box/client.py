@@ -156,6 +156,78 @@ class BoxClient(object):
         """
         return self.request("/files/"+fileId, method="DELETE")
 
+    def get_file_comments(self, fileId):
+        """Get comments of given file id
+        
+        Args:
+            - fileId : File id to get comment
+        
+        Returns:
+            - A collection of comment objects are returned.
+                If there are no comments on the file, an empty comments array is returned.
+            for more details, visit
+            http://developers.box.com/docs/#files-view-the-comments-on-a-file
+        """
+        return self.request("/files/"+fileId+"/comments")
+
+    def get_comments(self, commentId):
+        """Get comments with given id
+        
+        Args:
+            - commentId : Comment id to get
+        
+        Returns:
+            - A full comment object is returned is the ID is valid and if the user has access to the comment.
+            for more details, visit
+            http://developers.box.com/docs/#comments-get-information-about-a-comment
+        """
+        return self.request("/comments/"+commentId)
+
+    def add_comments(self, **post_data):
+        """Add comments to given id
+        
+        Args:
+            - post_data : Dictionary object containing type of Comment and message
+                        e.g. {"item": {"type": "file", "id": "FILE_ID"}, "message": "YOUR_MESSAGE"}
+
+        Returns:
+            - The new comment object is returned. Errors may occur if the item id is invalid,
+                the item type is invalid/unsupported, or if the user does not have access to the item being commented on.
+            for more details, visit
+            http://developers.box.com/docs/#comments-add-a-comment-to-an-item
+        """
+        return self.request("/comments/", method="POST", post_args=post_data)
+
+    def edit_comment(self, commentId, **post_data):
+        """Edit comments to given id
+        
+        Args:
+            - commentId : id of comment to modify
+            - post_data : Dictionary object containing new message
+                        e.g. {message": "YOUR NEW MESSAGE"}
+
+        Returns:
+            - The full updated comment object is returned
+                if the ID is valid and if the user has access to the comment.
+            for more details, visit
+            http://developers.box.com/docs/#comments-change-a-comments-message
+        """
+        return self.request("/comments/"+commentId, method="PUT", post_args=post_data)
+
+    def delete_comment(self, commentId):
+        """Delete comment of given id
+        
+        Args:
+            - commentId : id of comment to delete
+
+        Returns:
+            - An empty 204 response is returned to confirm deletion of the comment.
+                Errors can be thrown if the ID is invalid or if the user is not authorized to delete this particular comment.
+            for more details, visit
+            http://developers.box.com/docs/#comments-delete-a-comment
+        """
+        return self.request("/comments/"+commentId, method="DELETE")
+
     def request_upload(self, parentId, method='POST', fileObj=None, fileId=None):
         """An internal method that builds the url, headers, and params for Box API request.
         
