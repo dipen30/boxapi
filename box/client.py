@@ -227,6 +227,21 @@ class BoxClient(object):
             http://developers.box.com/docs/#comments-delete-a-comment
         """
         return self.request("/comments/"+commentId, method="DELETE")
+    
+    def search_items(self, **qs_args):
+        """Search items in user's box account
+        
+        Args:
+            - qs_args : Dictionary object containing search query, limit and offset
+                        e.g. {"query": "football", "limit":1, "offset": 0}
+
+        Returns:
+            - A collection of search results is returned.
+                If there are no matching search results, the entries array will be empty.
+            for more details, visit
+            http://developers.box.com/docs/#search-searching-a-users-account
+        """
+        return self.request("/search/", method="GET", qs_args=qs_args)
 
     def request_upload(self, parentId, method='POST', fileObj=None, fileId=None):
         """An internal method that builds the url, headers, and params for Box API request.
@@ -337,8 +352,6 @@ class BoxClient(object):
         response = {}
 
         data = con.getresponse()
-        print data.status
-        print data.getheaders()
         if data.status in ERRORCODES:
             response["status"] = data.status
             response["error"] = data.reason
@@ -356,6 +369,12 @@ class BoxClient(object):
         con.close()
 
         try:
+            # To parse response returned by Box.com APIs
             return json.loads(response)
         except:
-            return response
+            try:
+                # To parse response created by this library
+                return json.dumps(response)
+            except:
+                # return raw response
+                return response
